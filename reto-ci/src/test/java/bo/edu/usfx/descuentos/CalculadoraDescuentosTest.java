@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CalculadoraDescuentosPrueba {
+class CalculadoraDescuentosTest {
 
     private CalculadoraDescuentos calculadora;
 
