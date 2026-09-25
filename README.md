@@ -49,14 +49,15 @@ defectos del material en su commit inicial.
 
 Un commit por defecto. Cada commit se corresponde con un build:
 
-| Build | Commit           | Resultado                                              |
-|-------|------------------|--------------------------------------------------------|
-| #1    | version inicial  | FAILURE: no existe la herramienta `Maven 3.8.5`        |
-| #2    | fix 1            | FAILURE: `bat` no existe en un agente Linux            |
-| #3    | fix 2            | SUCCESS **falso**: 0 pruebas ejecutadas, sin informe    |
-| #4    | fix 3            | SUCCESS **falso**: 13 pruebas, 2 fallan, ignoradas     |
-| #5    | fix 4            | FAILURE real: `-Dtest.failure.ignore` fuera, JUnit publicado |
-| #6    | fix 5            | FAILURE: falta permitir el descuento 100               |
-| #7    | fix 6            | SUCCESS: 13 pruebas, 0 fallos, con informe y artefacto  |
+| Build | Commit    | Resultado                                                |
+|-------|-----------|----------------------------------------------------------|
+| #1    | version inicial | FAILURE: no existe la herramienta `Maven 3.8.5`         |
+| #2    | fix 1     | FAILURE: `bat` no existe en un agente Linux              |
+| #3    | fix 2     | SUCCESS **falso**: 0 pruebas ejecutadas, sin informe     |
+| #4    | fix 3     | SUCCESS **falso**: 13 pruebas, 2 fallan, ignoradas      |
+| #5    | fix 4     | FAILURE real: 11 pasan, 2 fallan, con informeJUnit     |
+| #6    | fix 5     | FAILURE: 12 pasan, 1 falla (el redondeo)                |
+| #7    | fix 6     | SUCCESS: 13 pruebas, 0 fallos, con informe y artefacto  |
+| #8    | fix 7     | SUCCESS: se agrega el bloque `unstable`                  |
 
 El detalle de cada defecto esta en `reto-ci/DEFECTOS.md`.
