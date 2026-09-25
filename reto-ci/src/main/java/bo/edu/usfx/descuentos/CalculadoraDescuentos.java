@@ -24,6 +24,6 @@ public class CalculadoraDescuentos {
     }
 
     private double redondear(double valor) {
-        return (int) (valor * 100) / 100.0;
+        return Math.round(valor * 100.0) / 100.0;
     }
 }
