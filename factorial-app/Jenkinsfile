@@ -1,0 +1,70 @@
+// Practica 6 - Pipeline declarativo de factorial-app
+// Jenkins lo lee desde el repositorio (Pipeline script from SCM),
+// con Script Path = factorial-app/Jenkinsfile.
+//
+// Adaptacion al monorepo: el workspace de un job Pipeline es la raiz del
+// repositorio, por eso cada paso entra con dir('factorial-app').
+// El resto del pipeline es identico al material de la practica.
+pipeline {
+    agent any
+
+    tools {
+        // Debe coincidir EXACTAMENTE con el nombre dado en
+        // Manage Jenkins -> Tools -> Maven installations
+        maven 'Maven-3.9'
+    }
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 15, unit: 'MINUTES')
+    }
+
+    triggers {
+        // Jenkins revisa el repositorio cada ~2 minutos y construye si hay commits nuevos
+        pollSCM('H/2 * * * *')
+    }
+
+    stages {
+        stage('Compilar') {
+            steps {
+                dir('factorial-app') {
+                    sh 'mvn -B clean compile'
+                }
+            }
+        }
+        stage('Pruebas') {
+            steps {
+                dir('factorial-app') {
+                    sh 'mvn -B test'
+                }
+            }
+            post {
+                always {
+                    // Publica el informe de JUnit aunque haya pruebas fallidas
+                    junit 'factorial-app/target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Empaquetar') {
+            steps {
+                dir('factorial-app') {
+                    sh 'mvn -B -DskipTests package'
+                }
+                archiveArtifacts artifacts: 'factorial-app/target/*.jar', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build y pruebas exitosas'
+        }
+        unstable {
+            echo 'Hay pruebas que fallan: el build queda en amarillo'
+        }
+        failure {
+            echo 'Fallo el proceso: revisa la etapa en rojo'
+        }
+    }
+}

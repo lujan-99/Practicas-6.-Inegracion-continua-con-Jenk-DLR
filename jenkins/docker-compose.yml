@@ -1,0 +1,18 @@
+# Practica 6 - Jenkins en Docker
+# Uso:   docker compose up -d        (en esta carpeta)
+#        docker compose logs jenkins (para ver la contrasena inicial)
+#        docker compose down         (detiene; los datos quedan en el volumen)
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: jenkins-com450
+    ports:
+      - "8090:8080"     # interfaz web: http://localhost:8090 (8080 lo usa la API de la Practica 5)
+      - "50000:50000"   # agentes remotos (no se usa en esta practica)
+    volumes:
+      - jenkins_home:/var/jenkins_home   # configuracion, jobs y builds sobreviven al contenedor
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
+    name: jenkins_home   # mismo nombre que con docker run (Opcion B del README)

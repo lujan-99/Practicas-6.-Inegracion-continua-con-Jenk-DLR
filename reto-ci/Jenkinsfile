@@ -1,0 +1,55 @@
+// Practica 6 - Pipeline de calculadora-descuentos
+// PARTE B: esta es la version CON DEFECTOS SEMBRADOS del material.
+// Solo se le agrega dir('reto-ci') porque el workspace del job es la raiz
+// del monorepo. Los defectos se corrigen despues, un commit por defecto.
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven 3.8.5'
+    }
+
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 15, unit: 'MINUTES')
+    }
+
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+
+    stages {
+        stage('Compilar') {
+            steps {
+                dir('reto-ci') {
+                    bat 'mvn -B clean compile'
+                }
+            }
+        }
+        stage('Pruebas') {
+            steps {
+                dir('reto-ci') {
+                    bat 'mvn -B test -Dmaven.test.failure.ignore=true'
+                }
+            }
+        }
+        stage('Empaquetar') {
+            steps {
+                dir('reto-ci') {
+                    bat 'mvn -B -DskipTests package'
+                }
+                archiveArtifacts artifacts: 'reto-ci/target/*.jar', fingerprint: true
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build y pruebas exitosas'
+        }
+        failure {
+            echo 'Fallo el proceso: revisa la etapa en rojo'
+        }
+    }
+}
