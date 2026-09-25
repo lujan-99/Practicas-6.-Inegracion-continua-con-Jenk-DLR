@@ -54,6 +54,9 @@ pipeline {
         success {
             echo 'Build y pruebas exitosas'
         }
+        unstable {
+            echo 'Hay pruebas que fallan: el build queda en amarillo'
+        }
         failure {
             echo 'Fallo el proceso: revisa la etapa en rojo'
         }
