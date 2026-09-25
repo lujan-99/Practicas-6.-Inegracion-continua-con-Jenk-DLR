@@ -23,21 +23,21 @@ pipeline {
         stage('Compilar') {
             steps {
                 dir('reto-ci') {
-                    bat 'mvn -B clean compile'
+                    sh 'mvn -B clean compile'
                 }
             }
         }
         stage('Pruebas') {
             steps {
                 dir('reto-ci') {
-                    bat 'mvn -B test -Dmaven.test.failure.ignore=true'
+                    sh 'mvn -B test -Dmaven.test.failure.ignore=true'
                 }
             }
         }
         stage('Empaquetar') {
             steps {
                 dir('reto-ci') {
-                    bat 'mvn -B -DskipTests package'
+                    sh 'mvn -B -DskipTests package'
                 }
                 archiveArtifacts artifacts: 'reto-ci/target/*.jar', fingerprint: true
             }
