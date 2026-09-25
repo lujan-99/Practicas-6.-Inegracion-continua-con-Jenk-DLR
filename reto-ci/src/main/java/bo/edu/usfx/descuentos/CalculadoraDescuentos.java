@@ -13,7 +13,7 @@ package bo.edu.usfx.descuentos;
 public class CalculadoraDescuentos {
 
     public double calcularPrecioFinal(double precioOriginal, double porcentajeDescuento) {
-        if (porcentajeDescuento < 0 || porcentajeDescuento >= 100) {
+        if (porcentajeDescuento < 0 || porcentajeDescuento > 100) {
             throw new IllegalArgumentException("El porcentaje de descuento debe estar entre 0 y 100");
         }
         if (precioOriginal <= 0) {
