@@ -17,7 +17,7 @@ public class Factorial {
         }
         long resultado = 1;
         for (int i = 2; i <= numero; i++) {
-            resultado *= i;
+            resultado += i;
         }
         return resultado;
     }
