@@ -16,7 +16,10 @@ pipeline {
 
     options {
         timestamps()
-        buildDiscarder(logRotator(numToKeepStr: '10'))
+        // Cada build es evidencia de la practica: con 10 se perdian
+        // diagnosticos. El bloque options se reevalua en cada build y pisa
+        // la configuracion del job, asi que el numero va aqui.
+        buildDiscarder(logRotator(numToKeepStr: '50'))
         timeout(time: 15, unit: 'MINUTES')
     }
 

@@ -11,7 +11,10 @@ pipeline {
 
     options {
         timestamps()
-        buildDiscarder(logRotator(numToKeepStr: '10'))
+        // Cada build es evidencia de la practica: con 10 se perdian los
+        // diagnosticos de la Parte B. El bloque options se reevalua en cada
+        // build y pisa la configuracion del job, asi que el numero va aqui.
+        buildDiscarder(logRotator(numToKeepStr: '50'))
         timeout(time: 15, unit: 'MINUTES')
     }
 
@@ -38,6 +41,17 @@ pipeline {
                     // Publica el informe de JUnit aunque haya pruebas fallidas
                     junit 'reto-ci/target/surefire-reports/*.xml'
                 }
+            }
+        }
+        stage('Cobertura') {
+            steps {
+                dir('reto-ci') {
+                    // verify ejecuta la regla de jacoco:check. Si la cobertura de
+                    // lineas del BUNDLE baja del 80%, mvn sale distinto de cero,
+                    // la etapa queda en rojo y Empaquetar no se ejecuta.
+                    sh 'mvn -B verify'
+                }
+                archiveArtifacts artifacts: 'reto-ci/target/site/jacoco/**', fingerprint: true
             }
         }
         stage('Empaquetar') {

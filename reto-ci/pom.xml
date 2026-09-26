@@ -17,6 +17,9 @@
         <!-- El contenedor jenkins/jenkins:lts-jdk17 trae Java 17: compilamos para 17 -->
         <maven.compiler.release>17</maven.compiler.release>
         <junit.version>5.11.4</junit.version>
+        <jacoco.version>0.8.12</jacoco.version>
+        <!-- Puerta de calidad del Ejercicio 2: 80% de lineas cubiertas en el BUNDLE -->
+        <jacoco.line.minimum>0.80</jacoco.line.minimum>
     </properties>
 
     <dependencies>
@@ -36,6 +39,53 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
+            </plugin>
+
+            <!-- Ejercicio 2: la cobertura como puerta de calidad.
+                 Tres ejecuciones:
+                   prepare-agent  instrumenta la JVM para registrar la cobertura
+                   report         genera el informe HTML en target/site/jacoco
+                   check          falla el build si la cobertura baja del minimo -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco.line.minimum}</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
