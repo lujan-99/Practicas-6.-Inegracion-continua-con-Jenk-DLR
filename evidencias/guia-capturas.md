@@ -3,47 +3,85 @@
 Jenkins ya esta configurado y los dos jobs tienen historial. Abri
 <http://localhost:8090>, entrar como `lujan99`, y sacar estas capturas.
 
+La numeracion sigue la de la guia de la practica.
+
 ## Parte A
 
-| # | Captura | URL |
-|---|---------|-----|
-| 1 | `mvn -B clean test` en local, con `Tests run: 9` | terminal en `factorial-app/` |
-| 2 | Panel principal de Jenkins con el usuario `lujan99` arriba a la derecha | `/` |
-| 3 | Manage Jenkins -> Tools, con `Maven-3.9` en Maven installations | `/manage/tools/` |
-| 4 | Configuracion del job: **Pipeline script from SCM** con la URL del repo y el Script Path | `/job/factorial-app/configure` |
-| 5 | Stage View del build sano, las 3 etapas en verde | `/job/factorial-app/4/` |
-| 6 | Console Output con `Tests run: 9, Failures: 0, Errors: 0` | `/job/factorial-app/4/console` |
-| 7 | Test Result con las 9 pruebas y **Failures: 0, Errors: 0** | `/job/factorial-app/4/testReport/` |
-| 8 | Build Artifacts con el `.jar` archivado | seccion *Build Artifacts* del build |
-| 9 | Test Result Trend del job | `/job/factorial-app/` |
+| Captura | Que hay que capturar | URL |
+|---------|---------------------|-----|
+| **1** | `mvn -B clean test` en local, con `Tests run: 9, Failures: 0` | terminal, en `~/Practicas6/factorial-app` |
+| **2** | Panel principal de Jenkins, con el usuario `lujan99` arriba a la derecha | `/` |
+| **3** | Pagina del job con la Stage View en verde: Compilar, Pruebas, Empaquetar y sus duraciones | `/job/factorial-app/` |
+| **4** | Test Result con las 9 pruebas desplegadas, 0 fallos | `/job/factorial-app/7/testReport/` |
+| **5** | Stage View con el historial **rojo -> verde** | `/job/factorial-app/` |
+
+### Capturas de apoyo del Paso 8
+
+No son numeradas por la guia, pero son las que hacen legible el entregable:
+
+| Que capturar | URL |
+|--------------|-----|
+| Manage Jenkins -> Tools, con `Maven-3.9` | **`/configureTools/`** (no `/manage/tools/`, da 404) |
+| Configuracion del job: Pipeline script from SCM, URL y Script Path | `/job/factorial-app/configure` |
+| Console Output del build #1, con `Unpacking ... apache-maven-3.9.16-bin.zip` | `/job/factorial-app/1/console` |
+| Test Result Trend del job | `/job/factorial-app/` |
+| Build Artifacts con el `.jar` | seccion *Build Artifacts* de `/job/factorial-app/7/` |
+
+**Ojo:** la guia dice que en la consola del build #1 se ve
+`apache-maven-3.9.11-bin.zip`. Aqui es **3.9.16**, porque se instalo la 3.9 mas
+reciente que Jenkins ofrece. No es una discrepancia.
+
+## Captura 5 en detalle
+
+El historial de `factorial-app` quedo asi:
+
+| Build | Resultado | Pruebas | Que paso |
+|-------|-----------|---------|----------|
+| #1-#5 | SUCCESS | 9/9 | los builds verdes de la Parte A |
+| **#6** | **FAILURE** | **5/9** | el defecto introducido a proposito |
+| **#7** | **SUCCESS** | **9/9** | el revert |
+
+Para que se lea el rojo en medio del verde, captura la pagina del job
+`/job/factorial-app/` con la columna de builds completa a la vista. Las tres
+etapas del build #6 se ven asi:
+
+- `Compilar` en verde
+- `Pruebas` en rojo
+- `Empaquetar` en gris, porque quedo **omitida** (la consola dice
+  `Stage "Empaquetar" skipped due to earlier failure(s)`), aunque la Stage View
+  la reporte con estado FAILED
+
+Del build #6 tambien vale la pena capturar el Test Result
+(`/job/factorial-app/6/testReport/`), donde se ven las 4 pruebas que fallan
+con el valor esperado y el obtenido:
+
+```
+expected: <120> but was: <15>            5!
+expected: <2> but was: <3>               2!
+expected: <3628800> but was: <55>        10!
+expected: <2432902008176640000> but was: <210>   20!
+```
+
+y que 0!, 1! y 3! siguen pasando: con una sola prueba de 3! este defecto habria
+pasado inadvertido.
 
 ## Parte B: los builds que hay que mirar
 
-| # | Captura | URL | Que demuestra |
-|---|---------|-----|---------------|
-| 10 | Build #1 en rojo | `/job/reto-ci/1/console` | `Tool type "maven" does not have an install of "Maven 3.8.5"` |
-| 11 | Build #2, Compilar en rojo y las otras etapas saltadas | `/job/reto-ci/2/` | `Batch scripts can only be run on Windows nodes` |
-| 12 | Build #3 **verde** | `/job/reto-ci/3/console` | `Tests run` no aparece: 0 pruebas, y aun asi hay `.jar` archivado |
-| 13 | Build #4 **verde** | `/job/reto-ci/4/console` | `Tests run: 13, Failures: 1, Errors: 1` y despues `BUILD SUCCESS` |
-| 14 | Build #5 en rojo, con Test Result | `/job/reto-ci/5/testReport/` | el primer build que dice la verdad: 11 pasan, 2 fallan |
-| 15 | Build #6 en rojo | `/job/reto-ci/6/testReport/` | 12 pasan, 1 falla: el redondeo |
-| 16 | Build #9 verde y sano | `/job/reto-ci/9/` | 13/13, informe, artefacto y causa `Started by an SCM change` |
+| Que demuestra | Donde |
+|---------------|-------|
+| **verde con 0 pruebas** y `.jar` archivado igual | `/job/reto-ci/3/console` |
+| **verde con `Failures: 1, Errors: 1` -> `BUILD SUCCESS`** | `/job/reto-ci/4/console` |
+| rojo real, 11 pasan / 2 fallan, con Test Result | `/job/reto-ci/5/testReport/` |
+| 12 pasan / 1 falla (el redondeo) | `/job/reto-ci/6/testReport/` |
+| sano, 13/13, causa `Started by an SCM change` | `/job/reto-ci/9/` |
+| errores de los builds #1 y #2 | `/job/reto-ci/1/console` y `/job/reto-ci/2/console` |
 
-Las capturas 12 y 13 son las importantes: son las dos que demuestran que
-**verde no es sano**. En la 12 el build pasa y no se ejecuto ninguna prueba;
-en la 13 hay dos pruebas en rojo y el build tambien pasa.
+Los dos primeros son los importantes: los dos estan **verdes** y los dos mienten.
 
-## Historial de builds
+Los errores de #1 y #2 estan mas abajo en la consola: usa el enlace
+**Full Log** arriba a la derecha, o `Ctrl+F` para `Maven 3.8.5` y `Windows nodes`.
 
-La tabla completa esta en `historial-builds.md`, y la tabla de defectos en
-`../reto-ci/DEFECTOS.md`. En el PDF hay que incluir las dos.
+## Tablas para el PDF
 
-## Notas
-
-- El puerto es **8090**, no 8080: el 8080 lo usa la API de la Practica 5.
-- Los builds #2, #3 y #4 de `factorial-app` salieron solos (`Started by an SCM
-  change`). Es normal: al ser un solo repositorio con las dos carpetas, cada
-  commit de `reto-ci` tambien despierta a `factorial-app`, que compila y prueba
-  su proyecto y sale verde.
-- Para que la ultima linea del build #9 se vea honesta, no hay que volver a
-  pulsar Build Now: ese build ya lo disparo `pollSCM` solo tras el push.
+- Historial de builds: `historial-builds.md`
+- Tabla de los 7 defectos: `../reto-ci/DEFECTOS.md`
