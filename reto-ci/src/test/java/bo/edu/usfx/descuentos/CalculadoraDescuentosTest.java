@@ -80,4 +80,16 @@ class CalculadoraDescuentosTest {
                 () -> calculadora.calcularPrecioPorCantidad(10.00, cantidad));
         assertEquals("La cantidad debe ser mayor que cero", e.getMessage());
     }
+
+    // TDD del Ejercicio 3: la prueba se escribe ANTES que la funcionalidad.
+    // Este commit es el rojo deliberado: el metodo todavia no tiene el tramo
+    // de 20 unidades, asi que la asercion falla.
+    @ParameterizedTest(name = "pedido grande: {0} uds a {1} = {2}")
+    @CsvSource({
+            "20, 10.00, 160.00",   // tramo 20 %: 200 * 0.80
+            "50, 10.00, 400.00"    // tramo 20 %: 500 * 0.80
+    })
+    void descuentoPorVolumenEscalaA20PorCiento(int cantidad, double unitario, double esperado) {
+        assertEquals(esperado, calculadora.calcularPrecioPorCantidad(unitario, cantidad), 0.001);
+    }
 }
