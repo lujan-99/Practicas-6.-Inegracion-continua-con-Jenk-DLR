@@ -15,6 +15,22 @@ La numeracion sigue la de la guia de la practica.
 | **4** | Test Result con las 9 pruebas desplegadas, 0 fallos | `/job/factorial-app/7/testReport/` |
 | **5** | Stage View con el historial **rojo -> verde** | `/job/factorial-app/` |
 | **6** | Pagina del build del Paso 9 con **Started by an SCM change** | `/job/factorial-app/6/` |
+| **7** | Pagina del job `reto-ci` con la Stage View **y** el Test Result Trend | `/job/reto-ci/` |
+
+### Captura 7 en detalle
+
+Es la verificacion de la Parte B. Se toma cuando el job `reto-ci` ya cumple las
+**siete** filas del build sano. La pagina del job muestra las dos cosas que pide
+la guia:
+
+- La **Stage View** con `Compilar`, `Pruebas` y `Empaquetar` en verde.
+- El **Test Result Trend**, el grafico con la evolucion de los resultados de las
+  pruebas build a build. Es la prueba visual de que el pipeline paso de
+  ejecuciones vacias o engañosas a 13 pruebas limpias.
+
+Ojo: la Stage View de `reto-ci` aparece en la pagina del job, pero las
+**duraciones** por etapa hay que sacarlas de la vista de pipeline de un build
+concreto (`/job/reto-ci/14/workflow-stage`).
 
 ### Captura 6 en detalle
 

@@ -141,10 +141,21 @@ pulsar Build Now: es la prueba de que `pollSCM('H/2 * * * *')` funciona.
 
 **Nota sobre el monorepo.** Los dos jobs leen el mismo repositorio, asi que
 cada commit despierta a los dos. Los builds #10 a #12 de `reto-ci` se
-producieron por commits de `factorial-app` (el defecto introducido a proposito
+produjeron por commits de `factorial-app` (el defecto introducido a proposito
 y su revert), no por cambios en `reto-ci`: compilan y prueban su propio proyecto
 y salen en verde. No es un defecto del pipeline, es la consecuencia de tener las
 dos carpetas en un solo repositorio.
+
+**Advertencia: rotacion de builds.** Jenkins conserva por defecto los 10
+ultimos builds de cada job. Al llegar `reto-ci` al build #15, los builds **#1 a
+#5 se borraron**: ya no figuran en el historial, ni su Console Output, ni sus
+Test Result. Los #6 en adelante siguen intactos, y el #6 conserva sus 13
+pruebas con la del redondeo en rojo.
+
+Se activo "Conservar registros de compilacion para siempre" (`LogRotator` con
+`-1`) en `factorial-app` y `reto-ci` para que no se repita. La evidencia de los
+builds #1 a #5 queda en el historial de git y en este documento, que se redacto
+con las lineas de consola capturadas en el momento.
 
 ## Las siete condiciones de un build sano, en el build #9 de reto-ci
 
