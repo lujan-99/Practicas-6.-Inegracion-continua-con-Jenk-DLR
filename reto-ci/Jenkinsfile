@@ -19,7 +19,12 @@ pipeline {
     }
 
     triggers {
-        pollSCM('H/2 * * * *')
+        // EJERCICIO 4: se reemplaza el polling por el webhook. Con pollSCM
+        // Jenkins se entera del push cada 2 minutos como muy pronto; con
+        // githubPush() reacciona al POST que GitHub manda al instante.
+        // El polling queda comentado por si hay que comparar.
+        // pollSCM('H/2 * * * *')
+        githubPush()
     }
 
     stages {
