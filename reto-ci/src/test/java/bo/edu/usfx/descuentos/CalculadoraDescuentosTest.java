@@ -53,4 +53,31 @@ class CalculadoraDescuentosTest {
                 () -> calculadora.calcularPrecioFinal(precio, 10));
         assertEquals("El precio original debe ser mayor que cero", e.getMessage());
     }
+
+    // Pruebas del Ejercicio 2: las que faltaban para que la puerta de
+    // cobertura del 80% deje de saltar tras agregar calcularPrecioPorCantidad.
+
+    @ParameterizedTest(name = "{0} uds a {1} = {2}")
+    @CsvSource({
+            "1,  10.00,  10.00",   // tramo 0 %
+            "2,  10.00,  20.00",   // tramo 0 %
+            "3,  10.00,  28.50",   // tramo 5 %
+            "4,  10.00,  38.00",   // tramo 5 %
+            "5,  10.00,  45.00",   // tramo 10 %
+            "9,  10.00,  81.00",   // tramo 10 %
+            "10, 10.00,  85.00",   // tramo 15 %
+            "25, 10.00, 212.50",   // tramo 15 %
+            "3,   3.33,   9.49"    // redondeo a dos decimales
+    })
+    void descuentoPorCantidadAplicaElTramoCorrespondiente(int cantidad, double unitario, double esperado) {
+        assertEquals(esperado, calculadora.calcularPrecioPorCantidad(unitario, cantidad), 0.001);
+    }
+
+    @ParameterizedTest(name = "cantidad {0} es invalida")
+    @ValueSource(ints = {0, -1, -50})
+    void cantidadNoPositivaLanzaExcepcion(int cantidad) {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> calculadora.calcularPrecioPorCantidad(10.00, cantidad));
+        assertEquals("La cantidad debe ser mayor que cero", e.getMessage());
+    }
 }
