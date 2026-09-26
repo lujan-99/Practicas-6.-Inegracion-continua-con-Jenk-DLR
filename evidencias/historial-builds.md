@@ -98,6 +98,29 @@ Changes found
 El rango `f0331b3..2def45a` es exactamente lo que Jenkins compara para decidir si
 hay commit nuevo.
 
+**Ojo: hay dos logs de polling, y no son el mismo.**
+
+| Desde donde se abre | Ruta | Que muestra |
+|---------------------|------|-------------|
+| Pagina del job | `/job/factorial-app/scmPollLog/` | Todos los escaneos del job |
+| Pagina de un build | `/job/factorial-app/6/pollingLog/` | Solo el escaneo que lanzo ese build |
+
+El del build #6 es la mejor evidencia del Paso 10, porque aisla la consulta
+concreta que detecto el defecto:
+
+```
+Started on Sep 26, 2026, 5:10:11 AM
+[poll] Last Built Revision: Revision 02da572… (origin/main)
+> git fetch --tags --force --progress -- …Practicas-6…git
+Polling for changes in
+Seen branch in repository origin/main
+> git log --full-history --no-abbrev --format=raw -M -m 02da572…..67e0833…
+```
+
+Jenkins comparo `02da572` contra `67e0833`, vio que habia commit nuevo y lanzo el
+build. Sin clic. Ambas rutas necesitan la barra final: sin ella Jenkins devuelve
+un 302.
+
 ## Job `reto-ci` (Parte B)
 
 | Build | Resultado | Causa                       | Pruebas                        | Lectura                          |
