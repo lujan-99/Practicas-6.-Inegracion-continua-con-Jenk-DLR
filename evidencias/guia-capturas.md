@@ -14,6 +14,19 @@ La numeracion sigue la de la guia de la practica.
 | **3** | Pagina del job con la Stage View en verde: Compilar, Pruebas, Empaquetar y sus duraciones | `/job/factorial-app/` |
 | **4** | Test Result con las 9 pruebas desplegadas, 0 fallos | `/job/factorial-app/7/testReport/` |
 | **5** | Stage View con el historial **rojo -> verde** | `/job/factorial-app/` |
+| **6** | Pagina del build del Paso 9 con **Started by an SCM change** | `/job/factorial-app/6/` |
+
+### Captura 6 en detalle
+
+Es la pagina del build **#6**, el del defecto introducido a proposito. El texto
+`Started by an SCM change` sale en la barra lateral izquierda, arriba del todo,
+junto al nombre del build. Es la prueba de que el build lo lanzo el `pollSCM` del
+Jenkinsfile y no un clic.
+
+Como apoyo, el **Git Polling Log** del job esta en
+`/job/factorial-app/scmPollLog/`: ahi se ve cada consulta que Jenkins le hizo a
+GitHub, con el rango de commits que comparo (`git log <anterior>..<nuevo>`) y si
+encontro cambios o no.
 
 ### Capturas de apoyo del Paso 8
 

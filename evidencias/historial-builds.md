@@ -55,6 +55,49 @@ Etapas de los builds verdes: `Declarative: Checkout SCM`,
 `Declarative: Tool Install`, `Compilar`, `Pruebas`, `Empaquetar`,
 `Declarative: Post Actions`, todas SUCCESS.
 
+## El disparo automatico (Paso 10)
+
+El bloque `triggers { pollSCM('H/2 * * * *') }` del Jenkinsfile es lo que lanzo
+el build #6. Verificado en la configuracion de los dos jobs:
+
+| Job | Trigger | Spec |
+|-----|---------|------|
+| `factorial-app` | `hudson.triggers.SCMTrigger` | `H/2 * * * *` |
+| `reto-ci` | `hudson.triggers.SCMTrigger` | `H/2 * * * *` |
+
+**El primer build siempre es manual.** El trigger se registra la primera vez que
+Jenkins ejecuta el Jenkinsfile, y eso ocurre dentro del build, asi que todavia no
+existe cuando se lanza el #1:
+
+| Build | Causa |
+|-------|-------|
+| #1 | `Started by user admin` (Build Now) |
+| #2 en adelante | `Started by an SCM change` |
+
+Ese patron se repite en `factorial-app` (#1 manual, #2-#8 por SCM) y en `reto-ci`
+(#1-#8 manuales, porque se dispararon a mano durante el diagnostico; #9 en
+adelante por SCM).
+
+**La `H` reparte la carga.** `H/2 * * * *` significa "cada 2 minutos", pero la `H`
+(hash) hace que Jenkins elija un desfase fijo distinto para cada job, para que no
+todos consulten GitHub en el mismo segundo. Comprobado: los dos jobs escanean en
+los minutos pares de la hora, pero con segundos distintos entre si.
+
+**Git Polling Log**: `/job/factorial-app/scmPollLog/`. Ahi queda registrado cada
+escaneo con los comandos que Jenkins ejecuta contra el repositorio:
+
+```
+Fetching changes from the remote Git repositories
+> git config remote.origin.url
+https://github.com/lujan-99/Practicas-6.-Inegracion-continua-con-Jenk-DLR.git
+> git fetch --tags --force --progress --
+> git log --full-history --no-abbrev --format=raw -M -m f0331b3..2def45a
+Changes found
+```
+
+El rango `f0331b3..2def45a` es exactamente lo que Jenkins compara para decidir si
+hay commit nuevo.
+
 ## Job `reto-ci` (Parte B)
 
 | Build | Resultado | Causa                       | Pruebas                        | Lectura                          |
