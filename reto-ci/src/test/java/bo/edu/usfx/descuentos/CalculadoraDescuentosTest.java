@@ -66,7 +66,7 @@ class CalculadoraDescuentosTest {
             "5,  10.00,  45.00",   // tramo 10 %
             "9,  10.00,  81.00",   // tramo 10 %
             "10, 10.00,  85.00",   // tramo 15 %
-            "25, 10.00, 212.50",   // tramo 15 %
+            "15, 10.00, 127.50",   // tramo 15 %
             "3,   3.33,   9.49"    // redondeo a dos decimales
     })
     void descuentoPorCantidadAplicaElTramoCorrespondiente(int cantidad, double unitario, double esperado) {
@@ -79,5 +79,18 @@ class CalculadoraDescuentosTest {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> calculadora.calcularPrecioPorCantidad(10.00, cantidad));
         assertEquals("La cantidad debe ser mayor que cero", e.getMessage());
+    }
+
+    // TDD del Ejercicio 3: la prueba se escribe ANTES que la funcionalidad.
+    // Este commit es el rojo deliberado: el metodo todavia no tiene el tramo
+    // de 20 unidades, asi que la asercion falla.
+    @ParameterizedTest(name = "pedido grande: {0} uds a {1} = {2}")
+    @CsvSource({
+            "20, 10.00, 160.00",   // tramo 20 %: 200 * 0.80
+            "25, 10.00, 200.00",   // tramo 20 %: 250 * 0.80
+            "50, 10.00, 400.00"    // tramo 20 %: 500 * 0.80
+    })
+    void descuentoPorVolumenEscalaA20PorCiento(int cantidad, double unitario, double esperado) {
+        assertEquals(esperado, calculadora.calcularPrecioPorCantidad(unitario, cantidad), 0.001);
     }
 }

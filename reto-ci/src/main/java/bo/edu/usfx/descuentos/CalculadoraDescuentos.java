@@ -31,7 +31,8 @@ public class CalculadoraDescuentos {
      *  - 1 o 2 unidades                 -> sin descuento
      *  - 3 o 4 unidades                 -> 5 %
      *  - 5 a 9 unidades                 -> 10 %
-     *  - 10 unidades o mas              -> 15 %
+     *  - 10 a 19 unidades               -> 15 %
+     *  - 20 unidades o mas              -> 20 %
      *  - el total se redondea a dos decimales (medio hacia arriba)
      */
     public double calcularPrecioPorCantidad(double precioUnitario, int cantidad) {
@@ -39,7 +40,9 @@ public class CalculadoraDescuentos {
             throw new IllegalArgumentException("La cantidad debe ser mayor que cero");
         }
         double porcentajePorCantidad;
-        if (cantidad >= 10) {
+        if (cantidad >= 20) {
+            porcentajePorCantidad = 20;
+        } else if (cantidad >= 10) {
             porcentajePorCantidad = 15;
         } else if (cantidad >= 5) {
             porcentajePorCantidad = 10;
